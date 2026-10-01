@@ -3,33 +3,18 @@ const dotenv = require('dotenv')
 dotenv.config()
 const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
+const cors = require('cors')
 const PORT = process.env.PORT || 3000
 const MONGODB_URL = process.env.MONGODB_URL
 
 const app = express()
 
-const allowedOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173")
-    .split(",")
-    .map((origin) => origin.trim())
-
-app.use((req, res, next) => {
-    const origin = req.headers.origin
-
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader("Access-Control-Allow-Origin", origin)
-        res.setHeader("Access-Control-Allow-Credentials", "true")
-        res.setHeader("Vary", "Origin")
-        res.setHeader("Access-Control-Allow-Headers", "Content-Type")
-        res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-    }
-
-    if (req.method === "OPTIONS") {
-        return res.sendStatus(204)
-    }
-
-    next()
-})
-
+app.use(cors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type']
+}))
 
 const authRouter = require('./routers/auth.route')
 const likeRouter = require("./routers/like.route")
